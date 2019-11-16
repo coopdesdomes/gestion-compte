@@ -46,7 +46,7 @@ class HelloAssoSyncroCommand extends Command implements ContainerAwareInterface
             ->get(Helloasso::class);
         $campaignUrl = sprintf('campaigns/%s/payments', $campaign);
         $payments_json = $helloassoHelper
-            ->get($campaignUrl, array('page' => 1));
+            ->get($campaignUrl, array('page' => 1, 'results_per_page' => 500));
 
         $em = $this->container->get('doctrine.orm.default_entity_manager');
 
@@ -61,9 +61,8 @@ class HelloAssoSyncroCommand extends Command implements ContainerAwareInterface
 
         $sfStyle = new SymfonyStyle($input, $output);
         $maxPage = $payments_json->pagination->max_page;
-
         for ($page = 1; $page <= $maxPage; $page++) {
-            $payments_json = $helloassoHelper->get($campaignUrl, ['page' => $page]);
+            $payments_json = $helloassoHelper->get($campaignUrl, ['page' => $page, 'results_per_page' => 500]);
             $payments = $payments_json->resources;
 
             foreach ($payments as $payment) {
@@ -102,16 +101,23 @@ class HelloAssoSyncroCommand extends Command implements ContainerAwareInterface
         $registration = $this->createRegistration($payment, $member, $em, $registrar);
 
         $member->setLastRegistration($registration);
-
-        $address = new Address();
-        $address->setStreet1($payment->payer_address);
-        $address->setZipcode($payment->payer_zip_code);
-        $address->setCity($payment->payer_city);
+        if (
+            isset($payments_json->payer_city) &&
+            isset($payer->payer_zip_code) &&
+            isset($payer->payer_address)
+        ) {
+            $address = new Address();
+            $address->setStreet1($payment->payer_address);
+            $address->setZipcode($payment->payer_zip_code);
+            $address->setCity($payment->payer_city);
+        }
 
         $benificiary = new Beneficiary();
         $benificiary->setFirstname($payment->payer_first_name);
         $benificiary->setLastname($payment->payer_last_name);
-        $benificiary->setAddress($address);
+        if (isset($address)) {
+            $benificiary->setAddress($address);
+        }
 
         $member->setMainBeneficiary($benificiary);
 
