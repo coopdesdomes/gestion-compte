@@ -33,13 +33,14 @@ EOF
     $userRepository = $em->getRepository(User::class);
 
     while (false !== $data = fgetcsv($listHandler)) {
-      dump($data[0]);
       $user = $userRepository->findOneByEmail($data[0]);
-      dump($user);
+
       if ($user) {
-        $user->getBeneficiary()->addFormation($contributeur);
-        $em->persist($user);
-        $em->flush();
+        if (false === $user->getBeneficiary()->getFormations()->contains($contributeur)) {
+            $user->getBeneficiary()->addFormation($contributeur);
+            $em->persist($user);
+            $em->flush();
+        } 
       }
     }
   }
