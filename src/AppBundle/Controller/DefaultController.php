@@ -91,7 +91,7 @@ class DefaultController extends Controller
                             'Ton adhésion expire dans ' . $remainingDays . ' jours.<br>' .
                             'Tu pourras réadhérer en ligne par carte bancaire à partir du ' .
                             strftime("%A %e %B", $renewalDate->getTimestamp()) .
-                            ' ou dès à présent au bureau des membres par chèque, espèce ou ' .
+                            ' ou dès à présent au magasin par chèque, espèce ou ' .
                             $this->getParameter('local_currency_name') .
                             '.');
                     }
