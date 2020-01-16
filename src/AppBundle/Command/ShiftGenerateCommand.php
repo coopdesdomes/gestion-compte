@@ -99,7 +99,7 @@ class ShiftGenerateCommand extends ContainerAwareCommand
             }
             $em->flush();
 
-            $shiftEmail = $this->getContainer()->getParameter('emails.shift');
+            /* $shiftEmail = $this->getContainer()->getParameter('emails.shift');
             foreach ($reservedShifts as $shift){
                 $mail = (new \Swift_Message('[ESPACE MEMBRES] Reprends ton créneau dans 28 jours'))
                     ->setFrom($shiftEmail['address'], $shiftEmail['from_name'])
@@ -115,7 +115,7 @@ class ShiftGenerateCommand extends ContainerAwareCommand
                         'text/html'
                     );
                 $mailer->send($mail);
-            }
+            } */
 
         }
         $message = $count.' créneau'.(($count>1) ? 'x':'').' généré'.(($count>1) ? 's':'');
